@@ -1,9 +1,32 @@
-from src.Contracts.DataServices.EDADataSvc import AbstractEDADataService
 import pandas as pd
-import json
+
+from src.Contracts.DataServices.EDADataSvc import AbstractEDADataService
 
 
 class EDADataService(AbstractEDADataService):
+
+    def GetSceneCount(self, sceneName: str) -> int:
+        return list(self.__GetAttributesRecords(self.__jsonTable)['scene']).count(sceneName)
+
+    def GetWeatherCount(self, weatherName: str) -> int:
+        return list(self.__GetAttributesRecords(self.__jsonTable)['weather']).count(weatherName)
+
+    def GetTimeOfDayCount(self, timeOfDayName: str) -> int:
+        return list(self.__GetAttributesRecords(self.__jsonTable)['timeofday']).count(timeOfDayName)
+
+    def __GetAttributesRecords(self, table):
+        attributes = table['attributes']
+        return pd.DataFrame.from_records(attributes)
+
+    def GetTimesOfDay(self):
+        return list(sorted(set(self.__GetAttributesRecords(self.__jsonTable)['timeofday'])))
+
+    def GetScenes(self):
+        return list(sorted(set(self.__GetAttributesRecords(self.__jsonTable)['scene'])))
+
+    def GetWeathers(self):
+        return list(sorted(set(self.__GetAttributesRecords(self.__jsonTable)['weather'])))
+
     def __init__(self, jsonFileName: str):
         self.__jsonFileName = jsonFileName
         self.__jsonTable = pd.read_json(jsonFileName)
